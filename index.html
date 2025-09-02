@@ -220,6 +220,83 @@
                     </div>
                 </div>
 
+                <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold">Workshops</h2>
+                <div class="flex space-x-2">
+                    <button class="filter-btn px-4 py-2 bg-blue-600 text-white rounded-lg" data-filter="all">All</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300" data-filter="live">Live</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300" data-filter="upcoming">Upcoming</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Workshop Card 1 (Live) -->
+                <div class="workshop-card bg-white rounded-xl shadow-md overflow-hidden transition" data-type="live">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1722172597269-d911054badb9?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Digital marketing workshop with presenter pointing to charts" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                            LIVE
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                            120 attending
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">Digital Marketing Masterclass</h3>
+                        <p class="text-gray-600 mb-4">Learn cutting-edge digital marketing strategies from industry experts.</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500"><i class="far fa-calendar-alt mr-1"></i> Ongoing</p>
+                                <p class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> 10:00 AM - 1:00 PM</p>
+                            </div>
+                            <button class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm hover:bg-blue-700 transition">Join Now</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Workshop Card 2 (Upcoming) -->
+                <div class="workshop-card bg-white rounded-xl shadow-md overflow-hidden transition" data-type="upcoming">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1728598909887-2d983a8889b1?q=80&w=1526&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Web development workshop with laptops showing code" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded text-xs font-medium">
+                            UPCOMING
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">Modern Web Development</h3>
+                        <p class="text-gray-600 mb-4">Exploring React, Node.js, and modern JavaScript ecosystem.</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500"><i class="far fa-calendar-alt mr-1"></i> June 15, 2023</p>
+                                <p class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> 2:00 PM - 5:00 PM</p>
+                            </div>
+                            <button class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm hover:bg-blue-700 transition">Register</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Workshop Card 3 (Upcoming) -->
+                <div class="workshop-card bg-white rounded-xl shadow-md overflow-hidden transition" data-type="upcoming">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1695902173528-0b15104c4554?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="AI workshop with robotic arm assembling circuit board" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded text-xs font-medium">
+                            UPCOMING
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">AI & Machine Learning Fundamentals</h3>
+                        <p class="text-gray-600 mb-4">Introduction to neural networks and practical AI applications.</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500"><i class="far fa-calendar-alt mr-1"></i> June 22, 2023</p>
+                                <p class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> 10:00 AM - 2:00 PM</p>
+                            </div>
+                            <button class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm hover:bg-blue-700 transition">Register</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
                 <!-- Quick Stats -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition duration-200">
