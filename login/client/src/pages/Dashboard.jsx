@@ -118,6 +118,9 @@ export default function Dashboard() {
         {/* Dashboard Main */}
         {activeSection === 'dashboard-main' && (
           <section>
+            <button onClick={handleLogout} style={{ padding: '10px 20px' }}>
+        Logout
+      </button>
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 text-white mb-8 shadow-lg flex justify-between items-center">
               <div>
                 <h2 className="text-2xl font-bold mb-2">
