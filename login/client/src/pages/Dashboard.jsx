@@ -33,6 +33,11 @@ export default function Dashboard() {
     alert('Logged out');
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/';
+  };
+
   const toggleNotifications = () => {
     // Add your notification toggle logic here
     alert('Toggle notifications');
@@ -63,7 +68,7 @@ export default function Dashboard() {
               <span className="notification-badge">3</span>
             </button>
 
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3"> 
               <div className="text-right hidden md:block">
                 <p className="text-sm font-medium text-gray-900">Dr. Rajesh Kumar</p>
                 <p className="text-xs text-gray-500">Computer Science Department</p>
@@ -72,7 +77,7 @@ export default function Dashboard() {
                 <i className="fas fa-user text-blue-600"></i>
               </div>
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="text-gray-400 hover:text-gray-600 transition duration-200"
                 type="button"
               >
@@ -82,6 +87,8 @@ export default function Dashboard() {
           </div>
         </div>
       </header>
+
+     
 
       {/* Navigation */}
       <nav className="bg-white shadow-sm">
@@ -118,9 +125,13 @@ export default function Dashboard() {
         {/* Dashboard Main */}
         {activeSection === 'dashboard-main' && (
           <section>
-            <button onClick={handleLogout} style={{ padding: '10px 20px' }}>
-        Logout
-      </button>
+             <button
+              onClick={handleLogout}
+              style={{ padding: '10px 20px', marginBottom: '1rem' }}
+              className="bg-red-600 text-white rounded px-4 py-2 hover:bg-red-700 transition"
+            >
+              Logout
+            </button>
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 text-white mb-8 shadow-lg flex justify-between items-center">
               <div>
                 <h2 className="text-2xl font-bold mb-2">
