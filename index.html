@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva - Smart Hall Booking System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#64748b',
+                        success: '#22c55e',
+                        warning: '#eab308',
+                        danger: '#ef4444',
+                        dark: '#1e293b',
+                        accent: '#8b5cf6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .calendar-day:hover {
+            background-color: #f1f5f9;
+            cursor: pointer;
+        }
+        .calendar-day.booked {
+            background-color: #fee2e2;
+        }
+        .calendar-day.available {
+            background-color: #dcfce7;
+        }
+        .calendar-day.selected {
+            background-color: #dbeafe;
+            border: 2px solid #2563eb;
+        }
+        .time-slot {
+            transition: all 0.2s ease;
+        }
+        .time-slot:hover {
+            transform: translateY(-2px);
+        }
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Login/Register Section -->
+    <!-- <div id="auth-section" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i class="fas fa-building text-3xl text-white"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800">Reserva</h1>
+                <p class="text-gray-600 mt-2">Smart Hall Booking System</p>
+                <p class="text-sm text-gray-500 mt-1">Adi Shankara Institute of Engineering and Technology</p>
+            </div>
+            
+            <div id="login-form" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <input type="email" id="login-email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200" placeholder="faculty@adishankara.ac.in">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="login-password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200" placeholder="••••••••">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                    <select id="login-role" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="faculty">Faculty Member</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+                
+                <button onclick="login()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition duration-200 shadow-md">
+                    Sign In to Reserva
+                </button>
+                
+                <div class="text-center">
+                    <button onclick="showRegister()" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition duration-200">
+                        Don't have an account? Register here
+                    </button>
+                </div>
+            </div>
+
+            <div id="register-form" class="space-y-6 hidden">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input type="text" id="register-name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Dr. Rajesh Kumar">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <input type="email" id="register-email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="faculty@adishankara.ac.in">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="register-password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Minimum 8 characters">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                    <input type="password" id="register-confirm" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Confirm your password">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                    <select id="register-department" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="cse">Computer Science & Engineering</option>
+                        <option value="ece">Electronics & Communication</option>
+                        <option value="mech">Mechanical Engineering</option>
+                        <option value="civil">Civil Engineering</option>
+                        <option value="admin">Administration</option>
+                    </select>
+                </div>
+                
+                <button onclick="register()" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition duration-200 shadow-md">
+                    Create Account
+                </button>
+                
+                <div class="text-center">
+                    <button onclick="showLogin()" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition duration-200">
+                        Already have an account? Sign in
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="min-h-screen bg-gray-50 hidden">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+                                <i class="fas fa-building text-white"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <h1 class="text-xl font-semibold text-gray-900">Reserva</h1>
+                            <p class="text-xs text-gray-500">Smart Hall Booking</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-6">
+                        <div class="relative">
+                            <button onclick="toggleNotifications()" class="text-gray-400 hover:text-gray-600 transition duration-200">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span class="notification-badge">3</span>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="text-right hidden md:block">
+                                <p class="text-sm font-medium text-gray-900" id="user-name">Dr. Rajesh Kumar</p>
+                                <p class="text-xs text-gray-500" id="user-department">Computer Science Department</p>
+                            </div>
+                            <div class="w-10 h-10 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center border-2 border-blue-200">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <button onclick="logout()" class="text-gray-400 hover:text-gray-600 transition duration-200">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex space-x-8 overflow-x-auto">
+                    <button onclick="showSection('dashboard-main')" class="border-b-2 border-blue-600 text-blue-600 px-4 py-4 text-sm font-medium transition duration-200">Dashboard</button>
+                    <button onclick="showSection('booking')" class="text-gray-500 hover:text-gray-700 px-4 py-4 text-sm font-medium transition duration-200">Book Hall</button>
+                    <button onclick="showSection('calendar')" class="text-gray-500 hover:text-gray-700 px-4 py-4 text-sm font-medium transition duration-200">Calendar View</button>
+                    <button onclick="showSection('my-bookings')" class="text-gray-500 hover:text-gray-700 px-4 py-4 text-sm font-medium transition duration-200">My Bookings</button>
+                    <button onclick="showSection('halls')" class="text-gray-500 hover:text-gray-700 px-4 py-4 text-sm font-medium transition duration-200">Available Halls</button>
+                    <button id="admin-panel-btn" onclick="showSection('admin-panel')" class="text-gray-500 hover:text-gray-700 px-4 py-4 text-sm font-medium transition duration-200 hidden">Admin Panel</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Welcome Section -->
+            <div id="dashboard-main" class="section-content">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 text-white mb-8 shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold mb-2">Welcome back, <span id="welcome-name">Dr. Kumar</span>!</h2>
+                            <p class="text-blue-100">Manage your hall bookings and check availability instantly</p>
+                        </div>
+                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center shadow-inner">
+                            <i class="fas fa-calendar-alt text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold">Workshops</h2>
+                <div class="flex space-x-2">
+                    <button class="filter-btn px-4 py-2 bg-blue-600 text-white rounded-lg" data-filter="all">All</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300" data-filter="live">Live</button>
+                    <button class="filter-btn px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300" data-filter="upcoming">Upcoming</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Workshop Card 1 (Live) -->
+                <div class="workshop-card bg-white rounded-xl shadow-md overflow-hidden transition" data-type="live">
+                    <div class="relative">
+                        <div class="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <i class="fas fa-chart-line text-6xl text-white"></i>
+                        </div>
+                        <div class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                            LIVE
+                        </div>
+                        <div class="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                            120 attending
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">Digital Marketing Masterclass</h3>
+                        <p class="text-gray-600 mb-4">Learn cutting-edge digital marketing strategies from industry experts.</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500"><i class="far fa-calendar-alt mr-1"></i> Ongoing</p>
+                                <p class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> 10:00 AM - 1:00 PM</p>
+                            </div>
+                            <button class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm hover:bg-blue-700 transition">Join Now</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Workshop Card 2 (Upcoming) -->
+                <div class="workshop-card bg-white rounded-xl shadow-md overflow-hidden transition" data-type="upcoming">
+                    <div class="relative">
+                        <div class="w-full h-48 bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
+                            <i class="fas fa-code text-6xl text-white"></i>
+                        </div>
+                        <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded text-xs font-medium">
+                            UPCOMING
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">Modern Web Development</h3>
+                        <p class="text-gray-600 mb-4">Exploring React, Node.js, and modern JavaScript ecosystem.</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500"><i class="far fa-calendar-alt mr-1"></i> June 15, 2023</p>
+                                <p class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> 2:00 PM - 5:00 PM</p>
+                            </div>
+                            <button class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm hover:bg-blue-700 transition">Register</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Workshop Card 3 (Upcoming) -->
+                <div class="workshop-card bg-white rounded-xl shadow-md overflow-hidden transition" data-type="upcoming">
+                    <div class="relative">
+                        <div class="w-full h-48 bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                            <i class="fas fa-robot text-6xl text-white"></i>
+                        </div>
+                        <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded text-xs font-medium">
+                            UPCOMING
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">AI & Machine Learning Fundamentals</h3>
+                        <p class="text-gray-600 mb-4">Introduction to neural networks and practical AI applications.</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500"><i class="far fa-calendar-alt mr-1"></i> June 22, 2023</p>
+                                <p class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i> 10:00 AM - 2:00 PM</p>
+                            </div>
+                            <button class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm hover:bg-blue-700 transition">Register</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition duration-200">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-check-circle text-green-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-gray-900">3</p>
+                                <p class="text-sm text-gray-500">Approved Bookings</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition duration-200">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-clock text-yellow-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-gray-900">1</p>
+                                <p class="text-sm text-gray-500">Pending Requests</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition duration-200">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-building text-blue-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-bold text-gray-900">8</p>
+                                <p class="text-sm text-gray-500">Available Halls</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Booking Form -->
+                <div class="bg-white rounded-lg shadow mb-8 hover:shadow-md transition duration-200">
+                    <div class="px-6 py-5 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Quick Hall Booking</h3>
+                    </div>
+                    <div class="px-6 py-5">
+                        <form class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Select Hall</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                    <option>Main Auditorium (200 seats)</option>
+                                    <option>Conference Hall A (50 seats)</option>
+                                    <option>Seminar Hall B (80 seats)</option>
+                                    <option>Lecture Hall C (120 seats)</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                                <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">From</label>
+                                <input type="time" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">To</label>
+                                <input type="time" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="px-6 py-4 bg-gray-50 rounded-b-lg text-right">
+                        <button class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition duration-200 shadow-md">
+                            Check Availability
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings -->
+                <div class="bg-white rounded-lg shadow hover:shadow-md transition duration-200">
+                    <div class="px-6 py-5 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Recent Bookings</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hall</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Purpose</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50 transition duration-200">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="font-medium text-gray-900">Main Auditorium</div>
+                                        <div class="text-sm text-gray-500">Capacity: 200</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Dec 15, 2024</div>
+                                        <div class="text-sm text-gray-500">10:00 AM - 12:00 PM</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Department Meeting</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Approved</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition duration-200">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="font-medium text-gray-900">Seminar Hall B</div>
+                                        <div class="text-sm text-gray-500">Capacity: 80</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Dec 18, 2024</div>
+                                        <div class="text-sm text-gray-500">2:00 PM - 4:00 PM</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Guest Lecture</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition duration-200">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="font-medium text-gray-900">Lecture Hall C</div>
+                                        <div class="text-sm text-gray-500">Capacity: 120</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Dec 12, 2024</div>
+                                        <div class="text-sm text-gray-500">9:00 AM - 11:00 AM</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Workshop Session</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Approved</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Section -->
+            <div id="booking" class="section-content hidden">
+                <div class="bg-white rounded-lg shadow mb-8 hover:shadow-md transition duration-200">
+                    <div class="px-6 py-5 border-b border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-900">Book a Hall</h2>
+                        <p class="text-gray-600 mt-1">Select a hall and time slot for your booking</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Hall Selection -->
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">Select Hall</h3>
+                                <div class="space-y-4">
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition duration-200 cursor-pointer">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h4 class="font-medium text-gray-900">Main Auditorium</h4>
+                                                <p class="text-sm text-gray-500">Capacity: 200 seats</p>
+                                                <p class="text-sm text-blue-600">Available Today</p>
+                                            </div>
+                                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-users text-blue-600"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition duration-200 cursor-pointer">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h4 class="font-medium text-gray-900">Seminar Hall B</h4>
+                                                <p class="text-sm text-gray-500">Capacity: 80 seats</p>
+                                                <p class="text-sm text-green-600">Available</p>
+                                            </div>
+                                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-chalkboard text-green-600"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition duration-200 cursor-pointer">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h4 class="font-medium text-gray-900">Lecture Hall C</h4>
+                                                <p class="text-sm text-gray-500">Capacity: 120 seats</p>
+                                                <p class="text-sm text-yellow-600">Limited Availability</p>
+                                            </div>
+                                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-desktop text-yellow-600"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Time Selection -->
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">Select Time Slot</h3>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
+                                    <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div class="time-slot bg-green-100 border border-green-200 rounded-lg p-3 text-center cursor-pointer hover:bg-green-200 hover:shadow-md">
+                                        <p class="font-medium text-green-800">9:00 AM</p>
+                                        <p class="text-xs text-green-600">Available</p>
+                                    </div>
+                                    <div class="time-slot bg-green-100 border border-green-200 rounded-lg p-3 text-center cursor-pointer hover:bg-green-200 hover:shadow-md">
+                                        <p class="font-medium text-green-800">10:00 AM</p>
+                                        <p class="text-xs text-green-600">Available</p>
+                                    </div>
+                                    <div class="time-slot bg-red-100 border border-red-200 rounded-lg p-3 text-center cursor-not-allowed">
+                                        <p class="font-medium text-red-800">11:00 AM</p>
+                                        <p class="text-xs text-red-600">Booked</p>
+                                    </div>
+                                    <div class="time-slot bg-green-100 border border-green-200 rounded-lg p-3 text-center cursor-pointer hover:bg-green-200 hover:shadow-md">
+                                        <p class="font-medium text-green-800">2:00 PM</p>
+                                        <p class="text-xs text-green-600">Available</p>
+                                    </div>
+                                    <div class="time-slot bg-yellow-100 border border-yellow-200 rounded-lg p-3 text-center cursor-pointer hover:bg-yellow-200 hover:shadow-md">
+                                        <p class="font-medium text-yellow-800">3:00 PM</p>
+                                        <p class="text-xs text-yellow-600">Reserved</p>
+                                    </div>
+                                    <div class="time-slot bg-green-100 border border-green-200 rounded-lg p-3 text-center cursor-pointer hover:bg-green-200 hover:shadow-md">
+                                        <p class="font-medium text-green-800">4:00 PM</p>
+                                        <p class="text-xs text-green-600">Available</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-6">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Event Purpose</label>
+                                    <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Brief description of your event..."></textarea>
+                                </div>
+                                
+                                <button class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 shadow-md mt-4">
+                                    Submit Booking Request
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar View Section -->
+            <div id="calendar" class="section-content hidden">
+                <div class="bg-white rounded-lg shadow mb-8 hover:shadow-md transition duration-200">
+                    <div class="px-6 py-5 border-b border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-900">Calendar View</h2>
+                        <p class="text-gray-600 mt-1">View hall availability across different dates</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-medium text-gray-900">December 2024</h3>
+                            <div class="flex space-x-2">
+                                <button class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition duration-200">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition duration-200">
+                                    Today
+                                </button>
+                                <button class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition duration-200">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-7 gap-2 mb-4">
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Sun</div>
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Mon</div>
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Tue</div>
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Wed</div>
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Thu</div>
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Fri</div>
+                            <div class="text-center text-sm font-medium text-gray-500 py-2">Sat</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-7 gap-2" id="calendar-days">
+                            <!-- Calendar days will be generated here -->
+                        </div>
+                        
+                        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                            <h4 class="font-medium text-gray-900 mb-3">Legend</h4>
+                            <div class="flex space-x-4">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-green-100 border border-green-200 mr-2"></div>
+                                    <span class="text-sm text-gray-600">Available</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-red-100 border border-red-200 mr-2"></div>
+                                    <span class="text-sm text-gray-600">Booked</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-yellow-100 border border-yellow-200 mr-2"></div>
+                                    <span class="text-sm text-gray-600">Partially Booked</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Bookings Section -->
+            <div id="my-bookings" class="section-content hidden">
+                <div class="bg-white rounded-lg shadow mb-8 hover:shadow-md transition duration-200">
+                    <div class="px-6 py-5 border-b border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-900">My Bookings</h2>
+                        <p class="text-gray-600 mt-1">Manage your hall booking requests</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="flex space-x-4 mb-6">
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">All</button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200">Pending</button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200">Approved</button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200">Rejected</button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-200">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Main Auditorium Booking</h4>
+                                        <p class="text-sm text-gray-500">Dec 15, 2024 • 10:00 AM - 12:00 PM</p>
+                                        <p class="text-sm text-gray-600">Department Annual Meeting</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Approved</span>
+                                        <p class="text-xs text-gray-500 mt-1">Confirmed on Dec 10</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-200">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Seminar Hall B</h4>
+                                        <p class="text-sm text-gray-500">Dec 18, 2024 • 2:00 PM - 4:00 PM</p>
+                                        <p class="text-sm text-gray-600">Guest Lecture by Industry Expert</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded-full">Pending</span>
+                                        <p class="text-xs text-gray-500 mt-1">Submitted 2 days ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-200">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900">Lecture Hall C</h4>
+                                        <p class="text-sm text-gray-500">Dec 20, 2024 • 9:00 AM - 11:00 AM</p>
+                                        <p class="text-sm text-gray-600">Student Project Presentation</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="px-3 py-1 bg-red-100 text-red-800 text-sm rounded-full">Rejected</span>
+                                        <p class="text-xs text-gray-500 mt-1">Conflict with exam schedule</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Halls Section -->
+            <div id="halls" class="section-content hidden">
+                <div class="bg-white rounded-lg shadow mb-8 hover:shadow-md transition duration-200">
+                    <div class="px-6 py-5 border-b border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-900">Available Halls</h2>
+                        <p class="text-gray-600 mt-1">Browse all available halls and their facilities</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-200">
+                                <div class="w-full h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-building text-4xl text-gray-400"></i>
+                                </div>
+                                <h4 class="font-medium text-gray-900">Main Auditorium</h4>
+                                <p class="text-sm text-gray-500 mb-2">Capacity: 200 seats</p>
+                                <p class="text-sm text-gray-600 mb-3">Fully equipped with audio-visual systems, stage, and comfortable seating</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Available</span>
+                                    <button class="text-blue-600 text-sm font-medium hover:text-blue-800">View Details</button>
+                                </div>
+                            </div>
+                            
+                            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-200">
+                                <div class="w-full h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-chalkboard text-4xl text-gray-400"></i>
+                                </div>
+                                <h4 class="font-medium text-gray-900">Seminar Hall B</h4>
+                                <p class="text-sm text-gray-500 mb-2">Capacity: 80 seats</p>
+                                <p class="text-sm text-gray-600 mb-3">Ideal for presentations and small conferences with projection facilities</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Available</span>
+                                    <button class="text-blue-600 text-sm font-medium hover:text-blue-800">View Details</button>
+                                </div>
+                            </div>
+                            
+                            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-200">
+                                <div class="w-full h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-desktop text-4xl text-gray-400"></i>
+                                </div>
+                                <h4 class="font-medium text-gray-900">Lecture Hall C</h4>
+                                <p class="text-sm text-gray-500 mb-2">Capacity: 120 seats</p>
+                                <p class="text-sm text-gray-600 mb-3">Modern lecture hall with smart board and computer facilities</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">Limited</span>
+                                    <button class="text-blue-600 text-sm font-medium hover:text-blue-800">View Details</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Panel Section -->
+            <div id="admin-panel" class="section-content hidden">
+                <div class="bg-white rounded-lg shadow mb-8 hover:shadow-md transition duration-200">
+                    <div class="px-6 py-5 border-b border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-900">Admin Panel</h2>
+                        <p class="text-gray-600 mt-1">Manage hall bookings and system settings</p>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                        <i class="fas fa-clock text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-2xl font-bold text-blue-800">5</p>
+                                        <p class="text-sm text-blue-600">Pending Approvals</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                        <i class="fas fa-check-circle text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-2xl font-bold text-green-800">12</p>
+                                        <p class="text-sm text-green-600">Approved This Week</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                        <i class="fas fa-times-circle text-red-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-2xl font-bold text-red-800">3</p>
+                                        <p class="text-sm text-red-600">Rejected Requests</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                            <h4 class="font-medium text-gray-900 mb-3">Pending Approval Requests</h4>
+                            <div class="space-y-3">
+                                <div class="bg-white p-3 rounded-lg border border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-medium">Prof. Sharma - Seminar Hall B</p>
+                                            <p class="text-sm text-gray-500">Dec 20, 2:00 PM - 4:00 PM</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button class="px-3 py-1 bg-green-100 text-green-800 rounded text-sm hover:bg-green-200">Approve</button>
+                                            <button class="px-3 py-1 bg-red-100 text-red-800 rounded text-sm hover:bg-red-200">Reject</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white p-3 rounded-lg border border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="font-medium">Dr. Gupta - Main Auditorium</p>
+                                            <p class="text-sm text-gray-500">Dec 22, 10:00 AM - 12:00 PM</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button class="px-3 py-1 bg-green-100 text-green-800 rounded text-sm hover:bg-green-200">Approve</button>
+                                            <button class="px-3 py-1 bg-red-100 text-red-800 rounded text-sm hover:bg-red-200">Reject</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-900 mb-3">Add New Hall</h4>
+                                <div class="space-y-3">
+                                    <input type="text" placeholder="Hall Name" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                    <input type="number" placeholder="Capacity" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                    <input type="text" placeholder="Location" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                    <button class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700">Add Hall</button>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-900 mb-3">System Settings</h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Email Notifications</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer" checked>
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Auto-approval for Faculty</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+                                    <button class="w-full bg-gray-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-700">Save Settings</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div id="notifications-panel" class="fixed right-0 top-16 w-80 bg-white shadow-2xl border-l border-gray-200 h-screen transform translate-x-full transition-transform duration-300 z-50">
+        <div class="p-4 border-b border-gray-200">
+            <h3 class="font-semibold text-gray-900">Notifications</h3>
+        </div>
+        <div class="p-4 space-y-3">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p class="text-sm text-blue-800">Your booking for Main Auditorium has been approved</p>
+                <p class="text-xs text-blue-600 mt-1">2 hours ago</p>
+            </div>
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <p class="text-sm text-yellow-800">Reminder: Seminar Hall B booking pending approval</p>
+                <p class="text-xs text-yellow-600 mt-1">1 day ago</p>
+            </div>
+            <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                <p class="text-sm text-green-800">New hall availability: Lecture Hall C at 3 PM</p>
+                <p class="text-xs text-green-600 mt-1">2 days ago</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current user state
+        let currentUser = null;
+        let currentRole = 'faculty';
+
+        // Show/hide sections
+        function showSection(sectionId) {
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        // Auth functions
+        function showRegister() {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('login-form').classList.remove('hidden');
+        }
+
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const role = document.getElementById('login-role').value;
+            
+            if (email && password) {
+                currentUser = email;
+                currentRole = role;
+                
+                // Update UI based on role
+                document.getElementById('user-name').textContent = role === 'admin' ? 'Admin User' : 'Dr. Rajesh Kumar';
+                document.getElementById('user-department').textContent = role === 'admin' ? 'System Administrator' : 'Computer Science Department';
+                document.getElementById('welcome-name').textContent = role === 'admin' ? 'Admin' : 'Dr. Kumar';
+                
+                // Show admin panel button if admin
+                if (role === 'admin') {
+                    document.getElementById('admin-panel-btn').classList.remove('hidden');
+                }
+                
+                document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+            }
+        }
+
+        function register() {
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirm = document.getElementById('register-confirm').value;
+            const department = document.getElementById('register-department').value;
+            
+            if (password !== confirm) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            if (name && email && password) {
+                alert('Registration successful! Please login with your credentials.');
+                showLogin();
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+        }
+
+        // Notifications
+        function toggleNotifications() {
+            const panel = document.getElementById('notifications-panel');
+            panel.classList.toggle('translate-x-full');
+        }
+
+        // Calendar generation
+        function generateCalendar() {
+            const calendar = document.getElementById('calendar-days');
+            if (calendar) {
+                let html = '';
+                // Empty days for December 2024 (starts on Sunday)
+                for (let i = 0; i < 0; i++) {
+                    html += `<div class="p-2 text-center"></div>`;
+                }
+                
+                for (let i = 1; i <= 31; i++) {
+                    const isBooked = i % 7 === 0 || i % 5 === 0;
+                    const isAvailable = i % 3 === 0 && !isBooked;
+                    const isToday = i === 15;
+                    
+                    let classes = 'calendar-day p-2 text-center border rounded-lg cursor-pointer ';
+                    if (isBooked) classes += 'booked ';
+                    if (isAvailable) classes += 'available ';
+                    if (isToday) classes += 'font-bold bg-blue-50 ';
+                    
+                    html += `<div class="${classes}">${i}</div>`;
+                }
+                calendar.innerHTML = html;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            generateCalendar();
+            
+            // Close notifications when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#notifications-panel') && !e.target.closest('.relative button')) {
+                    document.getElementById('notifications-panel').classList.add('translate-x-full');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
