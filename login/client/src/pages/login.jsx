@@ -36,8 +36,9 @@ export default function Login() {
         role: loginRole, // if your backend expects role, else remove
       });
 
-      // Save token to localStorage
+      // Save token and user data to localStorage
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userData', JSON.stringify(response.data.user));
 
       // Redirect or update UI as needed
       alert('Login successful!');
