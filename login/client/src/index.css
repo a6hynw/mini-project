@@ -1,2 +1,311 @@
 
 @import "tailwindcss";
+
+/* Animated premium gradient background */
+.bg-gradient-animate {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(1200px 800px at 20% 10%, rgba(99, 102, 241, 0.25), transparent 60%),
+              radial-gradient(1000px 600px at 80% 20%, rgba(168, 85, 247, 0.2), transparent 60%),
+              radial-gradient(900px 700px at 50% 90%, rgba(14, 165, 233, 0.18), transparent 60%),
+              linear-gradient(120deg, #0b0f17, #0b0f17);
+  filter: saturate(120%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bg-gradient-animate::before {
+  content: "";
+  position: absolute;
+  inset: -20% -20%;
+  background: conic-gradient(from 0deg, rgba(99,102,241,0.15), rgba(14,165,233,0.1), rgba(168,85,247,0.15), rgba(99,102,241,0.15));
+  animation: spin-slow 30s linear infinite;
+  filter: blur(60px) saturate(120%);
+}
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+/* Glass panel utility */
+.glass-panel {
+  background-color: rgba(17, 24, 39, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+/* Light theme styling for glass panels and background */
+html:not(.dark) .bg-gradient-animate {
+  background: radial-gradient(1200px 800px at 20% 10%, rgba(59, 130, 246, 0.12), transparent 60%),
+              radial-gradient(1000px 600px at 80% 20%, rgba(147, 197, 253, 0.12), transparent 60%),
+              radial-gradient(900px 700px at 50% 90%, rgba(99, 102, 241, 0.10), transparent 60%),
+              linear-gradient(120deg, #ffffff, #eaf2ff);
+}
+
+html:not(.dark) .glass-panel {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  color: #111827;
+}
+html:not(.dark) .glass-panel .text-white { color: #111827 !important; }
+html:not(.dark) .glass-panel .text-gray-300 { color: #4b5563 !important; }
+html:not(.dark) .glass-panel .text-gray-200 { color: #374151 !important; }
+html:not(.dark) .glass-panel .text-emerald-300 { color: #059669 !important; }
+html:not(.dark) .glass-panel .text-indigo-300 { color: #4f46e5 !important; }
+
+/* Form controls inside panels - light theme */
+html:not(.dark) .glass-panel input,
+html:not(.dark) .glass-panel select,
+html:not(.dark) .glass-panel textarea {
+  background-color: #ffffff;
+  color: #111827;
+  border-color: #e5e7eb !important;
+}
+html:not(.dark) .glass-panel .bg-white\/10 { background-color: rgba(0,0,0,0.04) !important; }
+html:not(.dark) .glass-panel .border-white\/10 { border-color: rgba(0,0,0,0.08) !important; }
+
+/* Running light border effect */
+.running-light {
+  position: relative;
+  overflow: hidden;
+}
+.running-light::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  padding: 2px;
+  border-radius: 1rem; /* match rounded-2xl default radius visually */
+  background: conic-gradient(from var(--angle, 0deg), rgba(99,102,241,0.6), rgba(14,165,233,0.6), rgba(168,85,247,0.6), rgba(99,102,241,0.6));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rotate-angle 4s linear infinite;
+  pointer-events: none; /* do not block clicks */
+}
+@keyframes rotate-angle {
+  to { --angle: 360deg; }
+}
+
+/* Hover reveal utility */
+.reveal-hover { overflow: hidden; }
+.reveal-hover .reveal-target {
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+  max-height: 0;
+  pointer-events: none;
+  transition: opacity .35s ease, transform .35s ease, max-height .35s ease;
+}
+.reveal-hover:hover .reveal-target,
+.reveal-hover:focus-within .reveal-target {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  max-height: 1000px; /* enough to show form */
+  pointer-events: auto;
+}
+
+/* Toast container */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 60;
+}
+.toast-item {
+  animation: toast-in .25s ease forwards;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Calendar animations */
+.month-title-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.0), rgba(255,255,255,0.35), rgba(255,255,255,0.0));
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 2.2s ease infinite;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+.tile-pop { transition: transform .18s ease, box-shadow .18s ease; }
+.tile-pop:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+
+.pulse-ring { position: relative; }
+.pulse-ring::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 12px;
+  border: 2px solid rgba(99,102,241,0.35);
+  animation: pulse 2s ease-out infinite;
+}
+@keyframes pulse { 0% { transform: scale(0.95); opacity: .8; } 70% { transform: scale(1.1); opacity: 0; } 100% { opacity: 0; } }
+
+.slide-in {
+  animation: slide-in .28s ease both;
+}
+@keyframes slide-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Premium badges (e.g., notification dot) */
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: linear-gradient(135deg, #fb7185, #f59e0b);
+  color: white;
+  font-size: 10px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 9999px;
+  border: 2px solid rgba(0,0,0,0.4);
+}
+
+/* Base dark mode text smoothing */
+html.dark body {
+  color: rgb(229 231 235);
+  background: #0b0f17;
+}
+
+/* Spinner accent for dark */
+.border-accent {
+  border-color: #6366f1 !important;
+}
+
+/* Workshop Card Animations */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Workshop card hover effects */
+.workshop-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.workshop-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Live indicator pulse animation */
+@keyframes livePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+.live-indicator {
+  animation: livePulse 2s ease-in-out infinite;
+}
+
+/* Carousel slide transitions */
+.carousel-slide-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.carousel-slide-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 500ms, transform 500ms;
+}
+
+.carousel-slide-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.carousel-slide-exit-active {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity 500ms, transform 500ms;
+}
+
+/* Status badge animations */
+.status-badge {
+  animation: statusGlow 3s ease-in-out infinite;
+}
+
+@keyframes statusGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+  }
+}
+
+/* Floating elements animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.floating-element {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Text line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
